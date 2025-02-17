@@ -7,20 +7,27 @@
 
 import Foundation
 import PhotosUI
-import _PhotosUI_SwiftUI
-import SwiftUICore
+import SwiftData
+import SwiftUI
 
 
-@Observable
-class Contact: Identifiable {
+@Model
+class Contact {
     
     var name: String
-    var pickerItem: PhotosPickerItem
-    var selectedImage: Image
     
-    init(name: String, pickerItem: PhotosPickerItem, selectedImage: Image) {
+    @Attribute(.externalStorage) var photo: Data
+    
+    init(name: String, photo: Data) {
         self.name = name
-        self.pickerItem = pickerItem
-        self.selectedImage = selectedImage
+        self.photo = photo
+    }
+    
+    func getImage() -> Image? {
+        if let uiImage = UIImage(data: photo) {
+            return Image(uiImage: uiImage)
+        } else {
+            return nil
+        }
     }
 }

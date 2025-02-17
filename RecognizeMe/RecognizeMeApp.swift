@@ -13,5 +13,6 @@ struct RecognizeMeApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: Contact.self)
     }
 }

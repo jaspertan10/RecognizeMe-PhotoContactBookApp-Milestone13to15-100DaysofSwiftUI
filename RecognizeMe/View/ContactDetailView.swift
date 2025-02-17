@@ -6,13 +6,29 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContactDetailView: View {
+    
+    @Environment(\.modelContext) var modelContext
+    @Environment(\.dismiss) var dismiss
+    
+    let contact: Contact
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ScrollView {
+            if let image = contact.getImage() {
+                image
+                    .resizable()
+                    .scaledToFit()
+            }
+            
+        }
+        .navigationTitle(contact.name)
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
-#Preview {
-    ContactDetailView()
-}
+//#Preview {
+//    ContactDetailView(contact: Contact(name: <#T##String#>, photo: nil))
+//}

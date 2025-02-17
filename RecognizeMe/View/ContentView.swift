@@ -7,26 +7,31 @@
 
 import PhotosUI
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
     
     //Bool to enable sheet to add new contact details
     @State private var showAddContactView = false
     
-    @State var contactList: [Contact] = []
+    @Query var contactList: [Contact] = []
     
     var body: some View {
         
         NavigationStack {
             List {
                 ForEach(contactList) { contact in
-                    HStack {
-                        contact.selectedImage
-                            .resizable()
-                            .scaledToFit()
-                        
-                        Text(contact.name)
-                        
+                    NavigationLink(value: contact) {
+                        HStack {
+                            if let image = contact.getImage() {
+                                image
+                                    .resizable()
+                                    .scaledToFit()
+                            }
+                            
+                            Text(contact.name)
+                            
+                        }
                     }
                 }
             }
@@ -38,7 +43,10 @@ struct ContentView: View {
                 }
             }
             .sheet(isPresented: $showAddContactView) {
-                AddContactView(contactList: $contactList)
+                AddContactView()
+            }
+            .navigationDestination(for: Contact.self) { contact in
+                ContactDetailView(contact: contact)
             }
         }
         
@@ -47,6 +55,5 @@ struct ContentView: View {
 
 #Preview {
     
-    var contactList: [Contact] = []
-    ContentView(contactList: contactList)
+    ContentView()
 }
