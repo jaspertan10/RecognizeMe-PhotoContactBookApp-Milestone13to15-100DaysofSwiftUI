@@ -23,8 +23,8 @@ struct ContactDetailView: View {
                     .scaledToFit()
             }
             
+            Text(contact.name)
         }
-        .navigationTitle(contact.name)
         .navigationBarTitleDisplayMode(.inline)
     }
 }
