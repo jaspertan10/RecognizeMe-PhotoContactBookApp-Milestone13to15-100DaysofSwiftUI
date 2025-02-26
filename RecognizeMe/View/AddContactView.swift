@@ -22,8 +22,13 @@ struct AddContactView: View {
     @State private var imageData: Data? //Stores selected image as a Data type
     
     @State private var name = ""
+    @State private var location: Coordinate2D?
     
     @State private var highlightMissingEntries: Bool = false
+    
+    @State private var showMapSheet: Bool = false
+    
+    let locationFetcher: LocationFetcher
     
     var body: some View {
         
@@ -48,6 +53,19 @@ struct AddContactView: View {
                     
                     TextField("Contact Name", text: $name)
                         .background(highlightMissingEntries && name.isEmpty ? .red : .clear)
+                    
+                }
+                
+                Section {
+                    Button("Location of meet") {
+                        if let userLocation = locationFetcher.lastKnownLocation {
+                            print("Your location is \(userLocation)")
+                            location = Coordinate2D(userLocation)
+                            showMapSheet = true
+                        } else {
+                            print("Your location is unknown")
+                        }
+                    }
                 }
                 
                 Section {
@@ -78,6 +96,12 @@ struct AddContactView: View {
                     await loadImage(pickerItem: pickerItem)
                 }
             }
+            .sheet(isPresented: $showMapSheet) {
+                
+                //Initially go in to MapView with location containing the position for MapCameraPosition
+                //After marking a location within MapView, the location (since binded) will have the new marked location. Indicating where user met the contact.
+                MapView(location: $location)
+            }
         }
     }
     
@@ -96,5 +120,5 @@ struct AddContactView: View {
 }
 
 #Preview {
-    AddContactView()
+    AddContactView(locationFetcher: LocationFetcher())
 }

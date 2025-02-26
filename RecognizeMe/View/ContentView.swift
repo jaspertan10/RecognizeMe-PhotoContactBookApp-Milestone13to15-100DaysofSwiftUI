@@ -17,6 +17,8 @@ struct ContentView: View {
     @Environment(\.modelContext) var modelContext
     @Query var contactList: [Contact] = []
     
+    let locationFetcher = LocationFetcher()
+    
     var body: some View {
         
         NavigationStack {
@@ -52,10 +54,13 @@ struct ContentView: View {
                 }
             }
             .sheet(isPresented: $showAddContactView) {
-                AddContactView()
+                AddContactView(locationFetcher: locationFetcher)
             }
             .navigationDestination(for: Contact.self) { contact in
                 ContactDetailView(contact: contact)
+            }
+            .onAppear {
+                locationFetcher.start()
             }
         }
         
