@@ -22,7 +22,8 @@ struct AddContactView: View {
     @State private var imageData: Data? //Stores selected image as a Data type
     
     @State private var name = ""
-    @State private var location: Coordinate2D?
+    @State private var startLocation: Coordinate2D?
+    @State private var locationMet: Coordinate2D?
     
     @State private var highlightMissingEntries: Bool = false
     
@@ -57,21 +58,39 @@ struct AddContactView: View {
                 }
                 
                 Section {
-                    Button("Location of meet") {
-                        if let userLocation = locationFetcher.lastKnownLocation {
-                            print("Your location is \(userLocation)")
-                            location = Coordinate2D(userLocation)
-                            showMapSheet = true
-                        } else {
-                            print("Your location is unknown")
+                    
+                    if let _ = locationMet {
+                        Text("Location met")
+                            
+                        MapView(location: $startLocation, locationMet: $locationMet)
+                            .frame(height: 300)
+                    }
+                    else {
+                        Button("Set location met") {
+                            if let userLocation = locationFetcher.lastKnownLocation {
+                                print("Your location is \(userLocation)")
+                                startLocation = Coordinate2D(userLocation)
+                                showMapSheet = true
+                            } else {
+                                print("Your location is unknown")
+                            }
                         }
+                        .foregroundStyle(highlightMissingEntries ? .red : .blue)
                     }
                 }
+            }
+            .navigationTitle("Add Contact")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .foregroundStyle(.red)
+                }
                 
-                Section {
+                ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") {
-                        
-                        guard((!name.isEmpty) && (selectedImage != nil)) else {
+                        guard((!name.isEmpty) && (selectedImage != nil) && (locationMet != nil)) else {
                             highlightMissingEntries = true
                             return
                         }
@@ -84,13 +103,6 @@ struct AddContactView: View {
                     }
                 }
             }
-            .navigationTitle("Add Contact")
-            .toolbar {
-                Button("Cancel") {
-                    dismiss()
-                }
-                .foregroundStyle(.red)
-            }
             .onChange(of: pickerItem) {
                 Task {
                     await loadImage(pickerItem: pickerItem)
@@ -100,7 +112,7 @@ struct AddContactView: View {
                 
                 //Initially go in to MapView with location containing the position for MapCameraPosition
                 //After marking a location within MapView, the location (since binded) will have the new marked location. Indicating where user met the contact.
-                MapView(location: $location)
+                MapView(location: $startLocation, locationMet: $locationMet)
             }
         }
     }
