@@ -39,9 +39,13 @@ class Contact {
     
     @Attribute(.externalStorage) var photo: Data
     
-    init(name: String, photo: Data) {
+    init(name: String, photo: Data, location: Coordinate2D?) {
         self.name = name
         self.photo = photo
+        
+        if let location = location {
+            self.location = location
+        }
     }
     
     func getImage() -> Image? {

@@ -96,7 +96,7 @@ struct AddContactView: View {
                         }
                         
                         if let imageData {
-                            let newContact = Contact(name: name, photo: imageData)
+                            let newContact = Contact(name: name, photo: imageData, location: locationMet ?? nil)
                             modelContext.insert(newContact)
                             dismiss()
                         }
